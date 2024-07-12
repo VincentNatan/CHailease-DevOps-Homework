@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+spec:
+  replicas: 3  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+        role: backend
+    spec:
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Etc/UTC  # Replace with your timezone
+            type: File
+      containers:
+        - name: my-app
+          image: vinrepo1.azurecr.io/chailease:latest  # Replace mygroup and my-app with your values
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8000
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
